@@ -1,0 +1,29 @@
+{
+    "name": "CF-Reimagine",
+    "manifest_version": 3,
+    "version": "1.0",
+    "side_panel": {
+    "default_path": "index.html"
+    },
+  "content_scripts": [
+    {
+      "js": ["src/content.jsx"],
+      "matches": ["https://codeforces.com/problemset/problem/*"]
+    }
+  ],
+   "background": {
+    "service_worker": "src/background.js"
+   },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "webNavigation",
+        "sidePanel"
+    ],
+    "host_permissions": [
+        "https://codeforces.com/problemset/problem/*",
+        "https://codeforces.com/contest/*/problem/*"
+    ]
+
+}
