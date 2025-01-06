@@ -1,4 +1,4 @@
-export const extractProblemDetails = () => {
+export const extractProblemDetails = (contestId,problemIndex) => {
     try {
       const titleElement = document.querySelector(".title");
       let title = titleElement ? titleElement.innerText : "";
@@ -29,7 +29,7 @@ export const extractProblemDetails = () => {
         output: sampleOutputs[index] || "",
       }));
   
-      return { title, slug, timeLimit, memoryLimit, sampleTestCases };
+      return { contestId,problemIndex,title, slug, timeLimit, memoryLimit, sampleTestCases };
     } catch (error) {
       console.error("Error extracting problem details:", error);
       return null;
