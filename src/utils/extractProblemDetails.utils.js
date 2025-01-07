@@ -16,7 +16,22 @@ export const extractProblemDetails = (contestId,problemIndex) => {
         ? memoryLimitElement.innerText.replace("memory limit per test", "")
         : "0";
       memoryLimit = Number(memoryLimit.split(" ")[0]) || 0;
-  
+
+      const statement = document.querySelector(".problem-statement>div:nth-child(2)").innerText;
+      
+
+      const inputDescription = document.querySelector(
+        ".input-specification"
+      ).innerText.substring(
+        "Input\n".length
+      );
+
+      const outputDescription = document.querySelector(
+        ".output-specification"
+      ).innerText.substring(
+        "Output\n".length
+      );
+
       const sampleInputs = Array.from(
         document.querySelectorAll(".input pre") || []
       ).map((input) => input.innerText);
@@ -29,10 +44,10 @@ export const extractProblemDetails = (contestId,problemIndex) => {
         output: sampleOutputs[index] || "",
       }));
   
-      return { contestId,problemIndex,title, slug, timeLimit, memoryLimit, sampleTestCases };
+      const problem = { contestId,problemIndex,title, slug, timeLimit, memoryLimit, statement, inputDescription, outputDescription, sampleTestCases };
+      return {problem};
     } catch (error) {
-      console.error("Error extracting problem details:", error);
-      return null;
+      return {error:error};
     }
   };
   

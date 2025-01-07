@@ -1,8 +1,14 @@
 import {useState,useRef} from 'react';
 import ReactCodeMirror, { lineNumbers } from '@uiw/react-codemirror';
 import { getLanguageExtension, getTheme } from '../../utils/editor.utils';
+import PropTypes from 'prop-types';
 
-function CodeEditor() {
+CodeEditor.propTypes = {
+   testCases: PropTypes.array.isRequired,
+   setTestCases: PropTypes.func.isRequired,
+};
+
+function CodeEditor({testCases,setTestCases}) {
     const [code, setCode] = useState({
         'c': '#include<stdio.h>\nint main(){\n\tprintf("Hello World!");\n\treturn 0;\n}',
         'cpp': '#include<iostream>\nint main(){\n\tstd::cout<<"Hello World!";\n\treturn 0;\n}',
@@ -44,7 +50,9 @@ function CodeEditor() {
           <div className="flex gap-4 items-center">
           <button
             className='p-2 rounded-md bg-green-400 hover:bg-emerald-500 hover:scale-105 text-white transform transition-all duration-200'
-            onClick={handleCodeRun}
+            onClick={()=>{
+              handleCodeRun();
+            }}
           >
             Run
           </button>
@@ -109,8 +117,8 @@ function CodeEditor() {
                     fontSize: `${fontSize}px`,
                     height: '100%'
                 }}
-                  onChange={(editor, data, value) => {
-                    setCode({...code,[language]:value});
+                  onChange={(editorValue) => {
+                    setCode({...code,[language]:editorValue});
                   }}
                   ref={editorRef}
                 />

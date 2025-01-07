@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "./components/editor/Editor";
 import Header from "./components/ui/Header"
-
+import { setProblemUpdateListener } from "./utils/hooks/useProblemData";
 
 function App() {
   const allTabs = ["Editor", "Settings"];
   const [activeTab, setActiveTab] = useState("Editor");
 
+  useEffect(()=>{
+    const cleanUp = setProblemUpdateListener();
+    return () => cleanUp();
+  },[])
+
   return (
-    <div>
+    <div className="bg-gradient-to-br from-indigo-500 to-black/20">
       <Header/>
       {/* A selection bar for editor, and settings */}
-      <div className="flex w-full px-4 py-2 gap-4 bg-violet-700">
+      <div className="flex w-full px-4 py-2 gap-4">
        { allTabs.map((tab, index) => (
           <button
             key={index}
@@ -34,5 +39,4 @@ function App() {
      </div>
   )
 }
-
 export default App
