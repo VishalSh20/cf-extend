@@ -1,12 +1,16 @@
 import { Code2Icon, SettingsIcon, SparklesIcon } from "lucide-react"
 import { extractProblemDetails } from "../utils/extractProblemDetails.utils.js"
 import { useState, useEffect } from "react"
+import { useSelector,useDispatch } from "react-redux";
+import { setCurrentProblem } from "../redux/currentProblem.slice.js";
 import Editor from "../components/editor/Editor.jsx";
 
 function Content() {
-  const [currentProblem, setCurrentProblem] = useState(null);
   const [showOptionToggle, setShowOptionToggle] = useState(false);
   const [showEditor,setShowEditor] = useState(false);
+  const dispatch = useDispatch();
+  const currentProblem = useSelector((state) => state.currentProblem.problem);
+  const problemAvailable = useSelector((state) => state.currentProblem.isAvailable);
 
   useEffect(() => {
     try {
@@ -23,16 +27,21 @@ function Content() {
       const problemDetails = data.problem;
       
       if(problemDetails) {
-        setCurrentProblem(problemDetails);
+        dispatch(setCurrentProblem(problemDetails));
         console.log("Problem Details:", problemDetails);
       } else {
         throw new Error("Could not get problem details: "+data.error.message);
       }
     } catch (error) {
       console.error("error: ", error.message);
-      setCurrentProblem(null);
+      dispatch(setCurrentProblem(null));
     }
-  }, []);
+  }, [dispatch]);
+
+  useEffect(()=>{
+    console.log(currentProblem);
+    console.log(problemAvailable);
+  },[currentProblem,problemAvailable]);
 
   return (
     <div className="fixed top-4 right-4 w-full max-h-svh flex flex-col items-end justify-between">
@@ -50,7 +59,7 @@ function Content() {
           className={`options_toggle p-6 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-xl 
           ${showOptionToggle ? "flex gap-4": "hidden"}`}
         >
-          {currentProblem && (
+          {problemAvailable && (
             <div className="flex flex-col gap-3 items-center text-gray-800">
               <span className="text-sm font-medium text-purple-800">
                 {currentProblem.title}

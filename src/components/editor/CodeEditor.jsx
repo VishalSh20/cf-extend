@@ -1,29 +1,30 @@
-import {useState,useRef} from 'react';
+import {useRef} from 'react';
 import ReactCodeMirror, { lineNumbers } from '@uiw/react-codemirror';
 import { getLanguageExtension, getTheme } from '../../utils/editor.utils';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCode,setLanguage } from '../../redux/code.slice';
+import {setEditorCodeFontSize,setEditorCodeTheme} from '../../redux/theme.slice.js';
+import {startRunning,setRunRequestPromise} from "../../redux/code.slice.js";
+import execute from '../../utils/execution/runcode.utils.js';
 
-CodeEditor.propTypes = {
-   testCases: PropTypes.array.isRequired,
-   setTestCases: PropTypes.func.isRequired,
-};
+function CodeEditor() {
+    const dispatch = useDispatch();
 
-function CodeEditor({testCases,setTestCases}) {
-    const [code, setCode] = useState({
-        'c': '#include<stdio.h>\nint main(){\n\tprintf("Hello World!");\n\treturn 0;\n}',
-        'cpp': '#include<iostream>\nint main(){\n\tstd::cout<<"Hello World!";\n\treturn 0;\n}',
-        'java': 'public class Main{\n\tpublic static void main(String[] args){\n\t\tSystem.out.println("Hello World!");\n\t}\n}',
-        'python': 'print("Hello World!")',
-        'javascript': 'console.log("Hello World!")'
-    });
-    const [language, setLanguage] = useState('c');
-    const [fontSize, setFontSize] = useState(16);
-    const [theme, setTheme] = useState('githubDark');
+    const problemDetails = useSelector((state)=>state.currentProblem.problem);
+    const code = useSelector((state)=>state.code.code);
+    const language = useSelector((state)=>state.code.language);
+    const fontSize = useSelector((state)=>state.theme.editor.code.fontSize);
+    const theme = useSelector((state)=>state.theme.editor.code.theme);
     const editorRef = useRef(null);
 
+    const running = useSelector((state) => state.code.running);
+
     const handleCodeRun = () => {
-      console.log("Code running!");
+          dispatch(startRunning());
+          const requestPromise = execute(code[language],language,problemDetails.testCases,problemDetails.memoryLimit,problemDetails.timeLimit);
+          dispatch(setRunRequestPromise(requestPromise));
     }
+
     const handleCodeSubmit = ()=>{
       console.log("Code submitted!");
     }
@@ -37,7 +38,7 @@ function CodeEditor({testCases,setTestCases}) {
                 value={language}
                 className='p-2 bg-violet-600 outline'
                 onChange={(e)=>{
-                    setLanguage(e.target.value);
+                    dispatch(setLanguage(e.target.value));
                 }}
             >
                 <option value='c'>C</option>
@@ -53,12 +54,14 @@ function CodeEditor({testCases,setTestCases}) {
             onClick={()=>{
               handleCodeRun();
             }}
+            disabled={running}
           >
             Run
           </button>
           <button
             className='p-2 rounded-md bg-violet-400 hover:bg-violet-500 hover:scale-105 text-white transform transition-all duration-200'
             onClick={handleCodeSubmit}
+            disabled={running}
           >
             Submit
           </button>
@@ -76,7 +79,7 @@ function CodeEditor({testCases,setTestCases}) {
                 max={20}
                 className='p-2 bg-violet-600 outline max-w-20'
                 onChange={(e)=>{
-                    setFontSize(e.target.value);
+                    dispatch(setEditorCodeFontSize(e.target.value));
                 }}
             />
             </div>
@@ -88,7 +91,7 @@ function CodeEditor({testCases,setTestCases}) {
                 value={theme}
                 className='p-2 bg-violet-600 outline'
                 onChange={(e)=>{
-                    setTheme(e.target.value);
+                    dispatch(setEditorCodeTheme(e.target.value));
                 }}
             >
                 <option value='githubDark'>Github Dark</option>
@@ -118,7 +121,7 @@ function CodeEditor({testCases,setTestCases}) {
                     height: '100%'
                 }}
                   onChange={(editorValue) => {
-                    setCode({...code,[language]:editorValue});
+                    dispatch(setCode({...code,[language]:editorValue}));
                   }}
                   ref={editorRef}
                 />

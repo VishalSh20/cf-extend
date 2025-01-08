@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-   problem:null
+   isAvailable:false,
+   problem:{}
 };
 
 const problemSlice = createSlice({
@@ -11,10 +12,11 @@ const problemSlice = createSlice({
         setCurrentProblem:(state,action)=>{
             const problem = action.payload;
             if(problem){
-                state.problem = problem;
+                state.problem = {...problem};
+                state.isAvailable = true;
             }
             else{
-                state.problem = null;
+                state = {...initialState}
             }
         }
     }
